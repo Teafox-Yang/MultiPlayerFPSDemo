@@ -1,6 +1,8 @@
 #include "WeaponBaseServer.h"
 
 #include "FpsBaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AWeaponBaseServer::AWeaponBaseServer()
 {
@@ -57,5 +59,27 @@ void AWeaponBaseServer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AWeaponBaseServer::MultiShootingEffect_Implementation()
+{
+	if(GetOwner() != UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+	{
+		UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, WeaponMesh, TEXT("Fire_FX_Slot"),
+		FVector::ZeroVector, FRotator::ZeroRotator, FVector::OneVector,
+		EAttachLocation::KeepRelativeOffset, true, EPSCPoolMethod::None,
+		true);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, GetActorLocation());
+	}
+}
+
+bool AWeaponBaseServer::MultiShootingEffect_Validate()
+{
+	return true;
+}
+
+void AWeaponBaseServer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	DOREPLIFETIME_CONDITION(AWeaponBaseServer, ClipCurrentAmmo, COND_None);
 }
 
