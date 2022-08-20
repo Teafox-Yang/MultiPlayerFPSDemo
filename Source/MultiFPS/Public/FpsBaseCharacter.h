@@ -26,6 +26,9 @@ private:
 	UCameraComponent* PlayerCamera;
 
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UCameraComponent* PlayerThirdCamera;
+
+	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* FPArmsMesh;
 
 	UPROPERTY(Category=Character, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
@@ -36,6 +39,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	AMultiFpsPlayerController* FpsPlayerController;
+
+	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UCameraComponent* CurrentCamera;
 #pragma endregion 
 protected:
 	// Called when the game starts or when spawned
@@ -55,6 +61,12 @@ protected:
 	void InputFirePressed();
 	UFUNCTION(BlueprintCallable, Category="InputAction")
 	void InputFireReleased();
+	UFUNCTION(BlueprintCallable, Category="InputAction")
+	void InputAttackPressed();
+	UFUNCTION(BlueprintCallable, Category="InputAction")
+	void InputAttackReleased();
+	UFUNCTION(BlueprintCallable, Category="InputAction")
+	void SwitchView();
 	UFUNCTION(BlueprintCallable, Category="InputAction")
 	void QuietWalkAction();
 	UFUNCTION(BlueprintCallable, Category="InputAction")
@@ -120,10 +132,20 @@ public:
 	void ServerFireRifleWeapon_Implementation(FVector CameraLocation, FRotator CameraRotation, bool IsMoving);
 	bool ServerFireRifleWeapon_Validate(FVector CameraLocation, FRotator CameraRotation, bool IsMoving);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAttackAction();
+	void ServerAttackAction_Implementation();
+	bool ServerAttackAction_Validate();
+	
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void MultiShooting();
 	void MultiShooting_Implementation();
 	bool MultiShooting_Validate();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void MultiAttack();
+	void MultiAttack_Implementation();
+	bool MultiAttack_Validate();
 
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void MultiSpawnBulletDecal(FVector Location, FRotator Rotation);

@@ -19,17 +19,27 @@ AFpsBaseCharacter::AFpsBaseCharacter()
 		PlayerCamera -> bUsePawnControlRotation = true;
 	}
 
+	PlayerThirdCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerThirdCamera"));
+	if(PlayerThirdCamera != nullptr)
+	{
+		PlayerThirdCamera -> SetupAttachment(RootComponent);
+		PlayerThirdCamera -> SetActive(false);
+		PlayerThirdCamera -> bUsePawnControlRotation = true;
+	}
+	CurrentCamera = PlayerCamera;
 	FPArmsMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FPArmMesh"));
 	if(FPArmsMesh != nullptr)
 	{
 		FPArmsMesh -> SetupAttachment(PlayerCamera);
 		FPArmsMesh -> SetOnlyOwnerSee(true);
+		FPArmsMesh -> SetCastShadow(true);
 	}
 
 	UMeshComponent* ThisMesh = GetMesh();
 	ThisMesh -> SetOwnerNoSee(true);
 	ThisMesh -> SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ThisMesh -> SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	ThisMesh -> SetCastHiddenShadow(true);
 #pragma endregion
 }
 
@@ -75,6 +85,11 @@ void AFpsBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	//鼠标左键开火
 	InputComponent -> BindAction(TEXT("Fire"), IE_Pressed, this, &AFpsBaseCharacter::InputFirePressed);
 	InputComponent -> BindAction(TEXT("Fire"), IE_Released, this, &AFpsBaseCharacter::InputFireReleased);
+
+	InputComponent -> BindAction(TEXT("Attack"), IE_Pressed, this, &AFpsBaseCharacter::InputAttackPressed);
+	InputComponent -> BindAction(TEXT("Attack"), IE_Released, this, &AFpsBaseCharacter::InputAttackReleased); 
+	//按TAB切换视角
+	InputComponent -> BindAction(TEXT("SwitchView"), IE_Pressed, this, &AFpsBaseCharacter::SwitchView);
 
 	//控制移动和视角
 	InputComponent -> BindAxis(TEXT("MoveRight"), this, &AFpsBaseCharacter::MoveRight);
@@ -161,7 +176,7 @@ void AFpsBaseCharacter::FireWeaponPrimary()
 	if(ServerPrimaryWeapon -> ClipCurrentAmmo > 0)
 	{
 		//服务端（枪口的闪光粒子效果(done)，播放射击声音(done)，减少弹药(done)，子弹的UI(done), 射线检测（三种步枪，手枪，狙击枪），伤害应用，弹孔生成等）
-		ServerFireRifleWeapon(PlayerCamera -> GetComponentLocation(), PlayerCamera -> GetComponentRotation(), false);
+		ServerFireRifleWeapon(CurrentCamera -> GetComponentLocation(), CurrentCamera -> GetComponentRotation(), false);
 		
 		//客户端（枪体播放动画(done)，手臂播放动画（done)，播放射击声音（done)，应用屏幕抖动(done)，枪口闪光粒子效果(done)，后坐力）
 		//客户端(十字线瞄准UI(done), 初始化UI(done), 播放准星扩散动画（done)）
@@ -316,6 +331,19 @@ bool AFpsBaseCharacter::ServerFireRifleWeapon_Validate(FVector CameraLocation, F
 	return true;
 }
 
+void AFpsBaseCharacter::ServerAttackAction_Implementation()
+{
+	if(ServerPrimaryWeapon)
+	{
+		MultiAttack();
+	}
+}
+
+bool AFpsBaseCharacter::ServerAttackAction_Validate()
+{
+	return true;
+}
+
 void AFpsBaseCharacter::MultiShooting_Implementation()
 {
 	if(ServerBodiesAnimBP)
@@ -325,6 +353,29 @@ void AFpsBaseCharacter::MultiShooting_Implementation()
 }
 
 bool AFpsBaseCharacter::MultiShooting_Validate()
+{
+	return true;
+}
+
+void AFpsBaseCharacter::MultiAttack_Implementation()
+{
+	if(ServerBodiesAnimBP)
+	{
+		if(!GetCurrentMontage())
+		{
+			if(this->GetVelocity().Size() > 0)
+			{
+				ServerBodiesAnimBP -> Montage_Play(ServerPrimaryWeapon -> ServerTPBodiesAttackUpperAnimMontage);
+			}
+			else
+			{
+				ServerBodiesAnimBP -> Montage_Play(ServerPrimaryWeapon -> ServerTPBodiesAttackAnimMontage);
+			}
+		}
+	}
+}
+
+bool AFpsBaseCharacter::MultiAttack_Validate()
 {
 	return true;
 }
@@ -459,6 +510,56 @@ void AFpsBaseCharacter::InputFireReleased()
 	}
 }
 
+void AFpsBaseCharacter::InputAttackPressed()
+{
+	//服务器播放
+	ServerAttackAction();
+}
+
+void AFpsBaseCharacter::InputAttackReleased()
+{
+}
+
+void AFpsBaseCharacter::SwitchView()
+{
+	if(PlayerCamera -> IsActive())
+	{
+		PlayerCamera -> SetActive(false);
+		PlayerThirdCamera -> SetActive(true);
+		
+		GetMesh() -> SetOwnerNoSee(false);
+		FPArmsMesh -> SetVisibility(false);
+		
+		CurrentCamera = PlayerThirdCamera;
+		if(ClientPrimaryWeapon)
+		{
+			ClientPrimaryWeapon -> WeaponMesh -> SetOwnerNoSee(true);
+		}
+		if(ServerPrimaryWeapon)
+		{
+			ServerPrimaryWeapon -> WeaponMesh -> SetOwnerNoSee(false);
+		}
+	}
+	else
+	{
+		PlayerThirdCamera -> SetActive(false);
+		PlayerCamera -> SetActive(true);
+		
+		GetMesh() -> SetOwnerNoSee(true);
+		FPArmsMesh -> SetVisibility(true);
+		
+		CurrentCamera = PlayerCamera;
+		if(ClientPrimaryWeapon)
+		{
+			ClientPrimaryWeapon -> WeaponMesh -> SetOwnerNoSee(false);
+		}
+		if(ServerPrimaryWeapon)
+		{
+			ServerPrimaryWeapon -> WeaponMesh -> SetOwnerNoSee(true);
+		}
+	}
+}
+
 void AFpsBaseCharacter::QuietWalkAction()
 {
 	GetCharacterMovement() -> MaxWalkSpeed = 300;
@@ -470,6 +571,7 @@ void AFpsBaseCharacter::NormalWalkAction()
 	GetCharacterMovement() -> MaxWalkSpeed = 600;
 	ServerNormalWalkAction();
 }
+
 #pragma endregion
 
 

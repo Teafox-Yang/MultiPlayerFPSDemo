@@ -65,6 +65,12 @@ public:
 	UAnimMontage* ServerTPBodiesShootAnimMontage;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* ServerTPBodiesAttackAnimMontage;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* ServerTPBodiesAttackUpperAnimMontage;
+
+	UPROPERTY(EditAnywhere)
 	float BulletDistance;
 
 	UPROPERTY(EditAnywhere)
