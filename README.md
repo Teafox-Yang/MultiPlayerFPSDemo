@@ -1,6 +1,6 @@
 # UE_COURSE_OF_TECENT
 ## MultiPlayerFPSDemo
-本课程demo仍处于稳步开发中，目前为第三次作业提交时的版本，由于项目当前实现的功能有限，因此目前只制作了与当前实现功能相关的UI.
+本课程demo仍处于施工中，目前为第五次作业提交时的版本。
 ### 第四节课作业演示视频链接：   
 链接：https://pan.baidu.com/s/1EscDx5jBZcrcr93gP-6BEw?pwd=lfov 
 提取码：lfov 
