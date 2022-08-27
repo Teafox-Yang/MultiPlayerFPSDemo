@@ -27,4 +27,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category="PlayerUI")
 	void UpdateHealthUI(float NewHealth);
+
+	UFUNCTION(BlueprintImplementableEvent, Category="PlayerUI")
+	void HidePlayerUI();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="PlayerUI")
+	void ShowPlayerUI();
 };
+

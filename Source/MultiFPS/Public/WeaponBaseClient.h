@@ -19,6 +19,9 @@ public:
 	UAnimMontage* ClientArmsFireAnimMontage;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* ClientArmsReloadAnimMontage;
+
+	UPROPERTY(EditAnywhere)
 	USoundBase* FireSound;
 
 	UPROPERTY(EditAnywhere)
@@ -26,6 +29,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
+
+	UPROPERTY(EditAnywhere)
+	int32 FPArmsBlendPoseIndex;
+
+	UPROPERTY(EditAnywhere)
+	float FieldOfAimingView;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -35,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "FPGunAnimation")
 	void PlayShootAnimation();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "FPGunAnimation")
+	void PlayReloadAnimation();
 
 	void DisplayWeaponEffects();
 };

@@ -36,7 +36,16 @@ void AWeaponBaseServer::OnOtherBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	{
 		EquipWeapon();
 		//玩家逻辑
-		FpsCharacter -> EquipPrimary(this);
+		if(KindOfWeapon == EWeaponType::DesertEagle)
+		{
+			FpsCharacter -> EquipSecondary(this);
+			FpsCharacter -> ServerEquipSecondary(this);
+		}
+		else
+		{
+			FpsCharacter -> EquipPrimary(this);
+			FpsCharacter -> ServerEquipPrimary(this);
+		}
 	}
 }
 
@@ -65,7 +74,7 @@ void AWeaponBaseServer::MultiShootingEffect_Implementation()
 {
 	if(GetOwner() != UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 	{
-		UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, WeaponMesh, TEXT("Fire_FX_Slot"),
+		UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, WeaponMesh, TEXT("MuzzleSocket"),
 		FVector::ZeroVector, FRotator::ZeroRotator, FVector::OneVector,
 		EAttachLocation::KeepRelativeOffset, true, EPSCPoolMethod::None,
 		true);
@@ -80,6 +89,7 @@ bool AWeaponBaseServer::MultiShootingEffect_Validate()
 
 void AWeaponBaseServer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(AWeaponBaseServer, ClipCurrentAmmo, COND_None);
 }
 

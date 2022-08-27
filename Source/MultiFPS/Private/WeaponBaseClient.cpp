@@ -25,7 +25,7 @@ void AWeaponBaseClient::Tick(float DeltaTime)
 
 void AWeaponBaseClient::DisplayWeaponEffects()
 {
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, WeaponMesh, TEXT("Fire_FX_Slot"),
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, WeaponMesh, TEXT("MuzzleSocket"),
 		FVector::ZeroVector, FRotator::ZeroRotator, FVector::OneVector,
 		EAttachLocation::KeepRelativeOffset, true, EPSCPoolMethod::None,
 		true);

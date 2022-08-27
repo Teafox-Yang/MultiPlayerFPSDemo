@@ -9,8 +9,11 @@
 UENUM()
 enum class EWeaponType : uint8
 {
-	AK47 UMETA(DisplayName = "AK47"),
-	DesertEagle UMETA(DisplayName = "DesertEagle")
+	Ak47 UMETA(DisplayName = "AK47"),
+	M4A1 UMETA(DisplayName = "M4A1"),
+	MP7 UMETA(DisplayName = "MP7"),
+	DesertEagle UMETA(DisplayName = "DesertEagle"),
+	Sniper UMETA(DisplayName = "Sniper")
 };
 
 UCLASS()
@@ -20,8 +23,10 @@ class MULTIFPS_API AWeaponBaseServer : public AActor
 	
 public:	
 	AWeaponBaseServer();
+	
 	UPROPERTY(EditAnywhere)
 	EWeaponType KindOfWeapon;
+	
 
 	UPROPERTY(EditAnywhere)
 	USkeletalMeshComponent* WeaponMesh;
@@ -35,7 +40,7 @@ public:
 
 	UFUNCTION()
 	void OnOtherBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-
+	
 	UFUNCTION()
 	void EquipWeapon();
 	
@@ -65,6 +70,9 @@ public:
 	UAnimMontage* ServerTPBodiesShootAnimMontage;
 
 	UPROPERTY(EditAnywhere)
+	UAnimMontage* ServerTPBodiesReloadAnimMontage;
+
+	UPROPERTY(EditAnywhere)
 	UAnimMontage* ServerTPBodiesAttackAnimMontage;
 
 	UPROPERTY(EditAnywhere)
@@ -78,6 +86,30 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	float BaseDamage;
+
+	UPROPERTY(EditAnywhere)
+	bool IsAutomatic;
+
+	UPROPERTY(EditAnywhere)
+	float AutomaticFireRate;
+
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* VerticalRecoilCurve;
+
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* HorizontalRecoilCurve;
+
+	UPROPERTY(EditAnywhere)
+	float MovingFireRandomRange;
+
+	UPROPERTY(EditAnywhere, Category = "PistolSpreadData")
+	float SpreadWeaponCallBackRate;
+
+	UPROPERTY(EditAnywhere, Category = "PistolSpreadData")
+	float SpreadWeaponMinIndex;
+
+	UPROPERTY(EditAnywhere, Category = "PistolSpreadData")
+	float SpreadWeaponMaxIndex;
 	
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void MultiShootingEffect();
