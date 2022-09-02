@@ -10,6 +10,9 @@
 ### 第六节课（基本物理）作业演示视频链接：   
 链接：https://pan.baidu.com/s/1Cc3tMbIGp0vIZtlnaLqa6A?pwd=i883 
 提取码：i883 
+### 第七节课（渲染基础）作业演示视频链接：   
+链接：https://pan.baidu.com/s/1DUdK3dE-3rQxeyhig3Jekw?pwd=42kx 
+提取码：42kx 
 ### 当前实现的功能
 1. UI开发
     * 玩家跳跃和开火的按钮UI。
