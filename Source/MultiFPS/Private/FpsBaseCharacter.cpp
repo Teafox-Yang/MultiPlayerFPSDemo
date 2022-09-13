@@ -111,7 +111,7 @@ void AFpsBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	//按R换弹
 	InputComponent -> BindAction(TEXT("Reload"), IE_Pressed, this, &AFpsBaseCharacter::InputReloadPressed);
 	//按TAB切换视角
-	InputComponent -> BindAction(TEXT("SwitchView"), IE_Pressed, this, &AFpsBaseCharacter::SwitchView);
+	//InputComponent -> BindAction(TEXT("SwitchView"), IE_Pressed, this, &AFpsBaseCharacter::SwitchView);
 
 	//控制移动和视角
 	InputComponent -> BindAxis(TEXT("MoveRight"), this, &AFpsBaseCharacter::MoveRight);
@@ -161,7 +161,7 @@ void AFpsBaseCharacter::StartWithKindOfWeapon()
 {
 	if(HasAuthority())
 	{
-		PurchaseWeapon(TestStartWeapon);
+		PurchaseWeapon(static_cast<EWeaponType>(UKismetMathLibrary::RandomIntegerInRange(0,static_cast<int8>(EWeaponType::EEND)-1)));
 	}
 }
 
@@ -698,8 +698,30 @@ void AFpsBaseCharacter::OnHit(AActor* DamagedActor, float Damage, AController* I
 	ClientUpdateHealthUI(Health);
 	if(Health <= 0)
 	{
+		DeathMatchDeath(DamageCauser);
 		//死亡逻辑
 	}
+}
+
+void AFpsBaseCharacter::DeathMatchDeath(AActor* DamageCauser)
+{
+	AWeaponBaseServer* CurrentServerWeapon = GetCurrentServerTPBodiesWeaponActor();
+	AWeaponBaseClient* CurrentClientWeapon = GetCurrentClientFPArmsWeaponActor();
+	if(CurrentClientWeapon)
+	{
+		CurrentClientWeapon -> Destroy();
+	}
+	if(CurrentServerWeapon)
+	{
+		CurrentServerWeapon -> Destroy();
+	}
+	ClientDeathMatchDeath();
+	AMultiFpsPlayerController* MultiFpsPlayerController = Cast<AMultiFpsPlayerController>(GetController());
+	if(MultiFpsPlayerController)
+	{
+		MultiFpsPlayerController -> DeathMatchDeath(DamageCauser);
+	}
+	
 }
 
 #pragma endregion
@@ -1082,6 +1104,15 @@ void AFpsBaseCharacter::MultiSpawnBulletDecal_Implementation(FVector Location, F
 bool AFpsBaseCharacter::MultiSpawnBulletDecal_Validate(FVector Location, FRotator Rotation)
 {
 	return true;
+}
+
+void AFpsBaseCharacter::ClientDeathMatchDeath_Implementation()
+{
+	AWeaponBaseClient* CurrentClientWeapon = GetCurrentClientFPArmsWeaponActor();
+	if(CurrentClientWeapon)
+	{
+		CurrentClientWeapon -> Destroy();
+	}
 }
 
 void AFpsBaseCharacter::ClientStopAiming_Implementation()

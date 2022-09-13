@@ -28,10 +28,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="PlayerUI")
 	void UpdateHealthUI(float NewHealth);
 
-	UFUNCTION(BlueprintImplementableEvent, Category="PlayerUI")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="PlayerUI")
 	void HidePlayerUI();
 
-	UFUNCTION(BlueprintImplementableEvent, Category="PlayerUI")
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category="PlayerUI")
 	void ShowPlayerUI();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Health")
+	void DeathMatchDeath(AActor* DamageCauser);
 };
 

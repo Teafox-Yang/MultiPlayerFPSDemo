@@ -76,6 +76,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="InputAction")
 	void InputAttackReleased();
 	
+	UFUNCTION(BlueprintCallable, Category="InputAction")
 	void SwitchView();
 	UFUNCTION(BlueprintCallable, Category="InputAction")
 	void QuietWalkAction();
@@ -195,6 +196,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Attacker")
 	float Health;
+	
+	void DeathMatchDeath(AActor *DamageCauser);
 #pragma endregion
 
 #pragma region NetWorking
@@ -315,6 +318,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientStopAiming();
+
+	UFUNCTION(Client, Reliable)
+	void ClientDeathMatchDeath();
 
 #pragma endregion  
 
