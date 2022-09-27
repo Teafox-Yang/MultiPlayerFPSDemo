@@ -45,6 +45,24 @@ AFpsBaseCharacter::AFpsBaseCharacter()
 #pragma endregion
 }
 
+void AFpsBaseCharacter::DelayBeginPlayCallBack()
+{
+	FpsPlayerController = Cast<AMultiFpsPlayerController>(GetController());
+	if(FpsPlayerController)
+	{
+		FpsPlayerController -> CreatePlayerUI();
+	}
+	else
+	{
+		FLatentActionInfo ActionInfo;
+		ActionInfo.CallbackTarget = this;
+		ActionInfo.ExecutionFunction = TEXT("DelayBeginPlayCallBack");
+		ActionInfo.UUID = FMath::Rand();
+		ActionInfo.Linkage = 0;
+		UKismetSystemLibrary::Delay(this, 0.5, ActionInfo);
+	}
+}
+
 #pragma region Engine
 void AFpsBaseCharacter::BeginPlay()
 {
@@ -55,10 +73,6 @@ void AFpsBaseCharacter::BeginPlay()
 	IsAiming = false;
 	//绑定OnHit方法
 	OnTakePointDamage.AddDynamic(this, &AFpsBaseCharacter::OnHit);
-	if(BornWithWeapon)
-	{
-		StartWithKindOfWeapon();
-	}
 	ClientArmsAnimBP = FPArmsMesh -> GetAnimInstance();
 	ServerBodiesAnimBP = GetMesh() -> GetAnimInstance();
 
@@ -66,6 +80,19 @@ void AFpsBaseCharacter::BeginPlay()
 	if(FpsPlayerController)
 	{
 		FpsPlayerController -> CreatePlayerUI();
+	}
+	else
+	{
+		FLatentActionInfo ActionInfo;
+		ActionInfo.CallbackTarget = this;
+		ActionInfo.ExecutionFunction = TEXT("DelayBeginPlayCallBack");
+		ActionInfo.UUID = FMath::Rand();
+		ActionInfo.Linkage = 0;
+		UKismetSystemLibrary::Delay(this, 0.5, ActionInfo);
+	}
+	if(BornWithWeapon)
+	{
+		StartWithKindOfWeapon();
 	}
 }
 
@@ -136,6 +163,7 @@ void AFpsBaseCharacter::EquipPrimary(AWeaponBaseServer* WeaponBaseServer)
 	 	ServerPrimaryWeapon -> K2_AttachToComponent(GetMesh(),TEXT("Weapon_Rifle"), EAttachmentRule::SnapToTarget,
 	 		EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget,
 	 		true);
+	 	ActiveWeapon = ServerPrimaryWeapon -> KindOfWeapon;
 		ClientEquipFPArmsPrimary();
 	 }
 }
@@ -153,6 +181,7 @@ void AFpsBaseCharacter::EquipSecondary(AWeaponBaseServer* WeaponBaseServer)
 		ServerSecondaryWeapon -> K2_AttachToComponent(GetMesh(),TEXT("Weapon_Rifle"), EAttachmentRule::SnapToTarget,
 			EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget,
 			true);
+		ActiveWeapon = ServerSecondaryWeapon -> KindOfWeapon;
 		ClientEquipFPArmsSecondary();
 	}
 }
@@ -180,7 +209,6 @@ void AFpsBaseCharacter::PurchaseWeapon(EWeaponType WeaponType)
 				GetActorTransform(),
 				SpawnInfo);
 			ServerWeapon -> EquipWeapon();
-			ActiveWeapon = EWeaponType::Ak47;
 			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("EquipPrimary(ServerWeapon)")));
 			EquipPrimary(ServerWeapon);
 		}
@@ -193,7 +221,6 @@ void AFpsBaseCharacter::PurchaseWeapon(EWeaponType WeaponType)
 				GetActorTransform(),
 				SpawnInfo);
 			ServerWeapon -> EquipWeapon();
-			ActiveWeapon = EWeaponType::M4A1;
 			EquipPrimary(ServerWeapon);
 		}
 		break;
@@ -205,7 +232,6 @@ void AFpsBaseCharacter::PurchaseWeapon(EWeaponType WeaponType)
 				GetActorTransform(),
 				SpawnInfo);
 			ServerWeapon -> EquipWeapon();
-			ActiveWeapon = EWeaponType::MP7;
 			EquipPrimary(ServerWeapon);
 		}
 		break;
@@ -217,7 +243,6 @@ void AFpsBaseCharacter::PurchaseWeapon(EWeaponType WeaponType)
 				GetActorTransform(),
 				SpawnInfo);
 			ServerWeapon -> EquipWeapon();
-			ActiveWeapon = EWeaponType::DesertEagle;
 			EquipSecondary(ServerWeapon);
 		}
 		break;
@@ -229,7 +254,6 @@ void AFpsBaseCharacter::PurchaseWeapon(EWeaponType WeaponType)
 				GetActorTransform(),
 				SpawnInfo);
 			ServerWeapon -> EquipWeapon();
-			ActiveWeapon = EWeaponType::Sniper;
 			EquipPrimary(ServerWeapon);
 		}
 		break;
@@ -1268,10 +1292,14 @@ void AFpsBaseCharacter::ClientFire_Implementation()
 		CurrentClientWeapon -> DisplayWeaponEffects();
 
 		//应用屏幕抖动
-		FpsPlayerController -> PlayerCameraShake(CurrentClientWeapon -> CameraShakeClass);
+		AMultiFpsPlayerController* MultiFpsPlayerController = Cast<AMultiFpsPlayerController>(GetController());
+		if(MultiFpsPlayerController)
+		{
+			MultiFpsPlayerController -> PlayerCameraShake(CurrentClientWeapon -> CameraShakeClass);
 
-		//播放准星扩散动画
-		FpsPlayerController -> DoCrosshairRecoil();
+			//播放准星扩散动画
+			MultiFpsPlayerController -> DoCrosshairRecoil();
+		}
 	}
 	
 }

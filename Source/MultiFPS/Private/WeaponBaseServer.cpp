@@ -25,7 +25,7 @@ AWeaponBaseServer::AWeaponBaseServer()
 
 	SphereCollision -> OnComponentBeginOverlap.AddDynamic(this, &AWeaponBaseServer::OnOtherBeginOverlap);
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void AWeaponBaseServer::OnOtherBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

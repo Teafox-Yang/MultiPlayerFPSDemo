@@ -3,8 +3,6 @@
 
 #include "KismetMultiFpsLibrary.h"
 
-#include "EnvironmentQuery/EnvQueryTypes.h"
-
 void UKismetMultiFpsLibrary::SortScores(TArray<FDeathMatchPlayerData>& Scores)
 {
 	//Scores.Sort([](const FDeathMatchPlayerData& a, const FDeathMatchPlayerData& b){return a.PlayerScore > b.PlayerScore;});

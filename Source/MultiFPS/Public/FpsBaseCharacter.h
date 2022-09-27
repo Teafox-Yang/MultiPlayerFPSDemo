@@ -19,6 +19,8 @@ public:
 	// Sets default values for this character's properties
 	AFpsBaseCharacter();
 
+	UFUNCTION()
+	void DelayBeginPlayCallBack();
 
 private:
 #pragma region Component
@@ -45,6 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType TestStartWeapon;
+
 #pragma endregion 
 protected:
 	// Called when the game starts or when spawned
@@ -196,7 +199,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Attacker")
 	float Health;
-	
+
+	UFUNCTION(BlueprintCallable)
 	void DeathMatchDeath(AActor *DamageCauser);
 #pragma endregion
 
