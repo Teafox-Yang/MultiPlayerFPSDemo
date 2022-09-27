@@ -1,6 +1,9 @@
 # UE_COURSE_OF_TECENT
 ## MultiPlayerFPSDemo
-腾讯游戏客户端公开课demo，本课程demo仍处于施工中，目前为第六次作业提交时的版本。
+腾讯游戏客户端公开课大作业DEMO
+### 大作业演示视频链接：
+链接：https://pan.baidu.com/s/1cdAO7349pYuGYuNr56bRXw?pwd=z7vp 
+提取码：z7vp
 ### 第四节课作业演示视频链接：   
 链接：https://pan.baidu.com/s/1EscDx5jBZcrcr93gP-6BEw?pwd=lfov 
 提取码：lfov 
@@ -16,7 +19,10 @@
 ### 第八节课（网络同步）作业演示视频链接：   
 链接：https://pan.baidu.com/s/1swgUwQeTMoZ2iK8c3JoXKA?pwd=lv67 
 提取码：lv67
-### 当前实现的功能
+## 运行游戏
+参考演示视频，Package文件夹中存放着已经打包好的游戏。先运行WindowsServer文件夹下的服务器程序，启用Dedicated Server(目前没有部署到云端)，然后运行WindowsNoEditor文件下的游戏程序即可游玩。
+## 当前实现的功能
+有些功能是为了单次课程作业的需求开发，可能最终不在大作业版本中，想查看这些功能可以参考历次作业的演示视频。
 1. UI开发
     * 玩家跳跃和开火的按钮UI。
     * 武器十字线准星的UI，开火时准星的扩散动画。
@@ -61,6 +67,7 @@
     * 产生击杀时，不同玩家的击杀数，死亡数以及分数的更新（击杀加10分，被杀扣15分）
     * 死亡竞赛游戏模式（在预设的时间内，玩家被击杀后会间隔4s后会直接重生，直至倒计时结束）
     * 游戏结束时，展示结算排行（击杀数，死亡数，分数）
+
 
 
 
